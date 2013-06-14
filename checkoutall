@@ -1,0 +1,9 @@
+#/usr/local/bin/coffee
+
+fs = require 'fs'
+
+client_csv = fs.readFileSync('./clients.csv').toString()
+
+clients = c[c.lastIndexOf(',')+1...c.length] for c in client_csv.split '\n'
+
+child_process.exec("svn co https://bluechip5.projectlocker.com/bluewolf/codeblue/svn/clients/#{client.replace ' ', '%20'}",console.log) for client in clients
