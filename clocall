@@ -1,0 +1,27 @@
+#!/usr/local/bin/coffee
+
+# count lines of code
+
+fs = require 'fs'
+child_process = require 'child_process'
+
+dirs = fs.readFileSync('./productions').toString().split('\n')
+dirs = (c[1...c.length] for c in dirs when c isnt '')
+
+clients = {}
+
+completed = 0
+
+complete = (clint, lines) ->
+  clients[clint] = lines
+  return unless ++completed is dirs.length
+  console.log ("#{client},#{lines}" for client, lines of clients).join '\n'
+
+for dir in dirs
+  (->
+    client = dir[0...dir.indexOf('/')]
+    handler = (err, summary) ->
+      r = summary.split(' ')
+      complete client, r[r.length-1].trim() # use the sloc metric that ignores whitespace and comments
+    child_process.exec "cloc --read-lang-def=/home/andrew/cloc-force/force-def.txt #{dir.replace ' ', '\\ '} | grep SUM", handler
+  )()
