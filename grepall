@@ -1,0 +1,27 @@
+#!/usr/local/bin/coffee
+
+# count assertions in all clients
+
+fs = require 'fs'
+child_process = require 'child_process'
+
+dirs = fs.readFileSync('./productions').toString().split('\n')
+dirs = (c[1...c.length] for c in dirs when c isnt '')
+
+clients = {}
+
+completed = 0
+
+complete = (clint, asserts) ->
+  clients[clint] = asserts
+  return unless ++completed is dirs.length
+  console.log ("#{client},#{asserts}" for client, asserts of clients).join '\n'
+
+for dir in dirs
+  (->
+    client = dir[0...dir.indexOf('/')]
+    handler = (err, summary) ->
+      r = summary.trim().split(' ')
+      complete client, r[0].trim()
+    child_process.exec "grep -i system.assert #{dir.replace ' ', '\\ '}/src/*/* | wc", handler
+  )()
