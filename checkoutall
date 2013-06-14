@@ -1,5 +1,8 @@
 #/usr/local/bin/coffee
 
+# Input is a CSV file
+#  The last column should be the client name in SVN
+
 fs = require 'fs'
 
 client_csv = fs.readFileSync('./clients.csv').toString()
