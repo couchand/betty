@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Produce a roughly accurate listing of all production orgs.
+
+# list all client orgs
+ls */*                      | \
+
+# look for production orgs
+grep -i production: -A 2    | \
+
+# replace the grep delimiter with a single char
+# this way we can use troff
+sed "s/--/$/"               | \
+
+# replace the colon after the folder name with nothing
+sed "s/:$//"                | \
+
+# replace all newlines in the file with a forward slash
+# this brings the first production folder into line with the parent
+tr '\n' '/'                 | \
+
+# prepend a forward slash for the first client
+sed "s/^/\//"               | \
+
+# change our special group marker back to a newline
+tr '$' '\n'                 | \
+
+# eliminate the double slashes
+# this is more complicated than it needs to be
+# because we'd like to figure out the multiple production
+# per client thing here as well
+sed 's#^\(.*\)//$#\1#'
+
+# convinience newline
+echo
